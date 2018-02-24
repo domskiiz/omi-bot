@@ -14,6 +14,18 @@ rtm.start();
 
 mongoose.connect(process.env.MONGODB_URI);
 
+mongoose.connection.on('connected', function () {
+  console.log('Mongoose default connection open');
+});
+
+mongoose.connection.on('error',function (err) {
+  console.log('Mongoose default connection error: ' + err);
+});
+
+mongoose.connection.on('disconnected', function () {
+  console.log('Mongoose default connection disconnected');
+});
+
 
 let channelList = [];
 const appData = {};
@@ -43,14 +55,17 @@ rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, function() {
 
 // Listen for messages
 rtm.on(RTM_EVENTS.MESSAGE, (message) => {
+  if (!message) return;
   // Skip messages that are from a bot or my own user ID
   if ( (message.subtype && message.subtype === 'bot_message') ||
+       (message.subtype && message.subtype === 'message_changed') ||
+       (message.subtype && message.subtype === 'message_deleted') ||
        (!message.subtype && message.user === appData.selfId) ) {
     return;
   }
 
   // If bot is mentioned
-  if (message.text.includes("<@U9DRYV29Z>")) {
+  if (message.text.includes("<@U9DRYV29Z>") && ! message.subtype) {
     var quote, author;
     Quote.count().exec(function (err, count) {
       // Get a random entry
@@ -71,8 +86,6 @@ rtm.on(RTM_EVENTS.MESSAGE, (message) => {
     channelList.push(message.channel);
     console.log(channelList);
   }
-
-
 });
 
 
