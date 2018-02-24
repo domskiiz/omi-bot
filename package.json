@@ -1,0 +1,24 @@
+{
+  "name": "omi-bot",
+  "version": "1.0.0",
+  "description": "Slackbot that sends a daily quote to our #general channel from pledge quarter.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/domskiiz/omi-bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/domskiiz/omi-bot/issues"
+  },
+  "homepage": "https://github.com/domskiiz/omi-bot#readme",
+  "dependencies": {
+    "@slack/client": "^3.16.0",
+    "express": "^4.16.2",
+    "mongoose": "^5.0.7"
+  }
+}
