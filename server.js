@@ -2,7 +2,7 @@ const { RtmClient, CLIENT_EVENTS, RTM_EVENTS, WebClient } = require('@slack/clie
 
 const express   = require('express');
 const mongoose  = require('mongoose');
-
+const axios     = require('axios');
 const app       = express();
 
 const web       = new WebClient(process.env.SLACK_BOT_TOKEN);
@@ -66,18 +66,46 @@ rtm.on(RTM_EVENTS.MESSAGE, (message) => {
 
   // If bot is mentioned
   if (message.text.includes("<@U9DRYV29Z>") && ! message.subtype) {
-    var quote, author;
-    Quote.count().exec(function (err, count) {
-      // Get a random entry
-      var random = Math.floor(Math.random() * count)
-      Quote.findOne().skip(random).exec(
-        function (err, result) {
-          quote = result.quote;
-          author = result.author;
-          rtm.sendMessage(`${quote} -${author}`, message.channel)
-            .then(() => console.log(`Message sent to channel ${message.channel}`))
-            .catch(console.error);
-      });
+    axios({
+      method: 'post',
+      url: 'https://api.api.ai/v1/query?v=20150910',
+      headers: {
+        'Authorization': 'Bearer ' + process.env.API_AI_CLIENT_TOKEN,
+        'Content-Type': 'application/json; charset=utf-8'
+      },
+      data: {
+        query: message.text.toLowerCase(),
+        lang: "en",
+        sessionId: '6fd6f06f-c81d-4484-92b3-fe3e2afb3222',
+      },
+    })
+    .then((response) => {
+      if (response.data.result.metadata.intentName == 'get_quote') {
+        var reply = response.data.result.fulfillment.speech;
+        var quote, author;
+        Quote.count().exec(function (err, count) {
+          // Get a random entry
+          var random = Math.floor(Math.random() * count)
+          Quote.findOne().skip(random).exec(
+            function (err, result) {
+              quote = result.quote;
+              author = result.author;
+              rtm.sendMessage(`${reply}`, message.channel);
+              rtm.sendMessage(`${quote} -${author}`, message.channel)
+                .then(() => console.log(`Message sent to channel ${message.channel}`))
+                .catch(console.error);
+          });
+        });
+      } else if (response.data.result.metadata.intentName == 'insult') {
+        var reply = response.data.result.fulfillment.speech;
+        rtm.sendMessage(`${reply}`, message.channel)
+          .then(() => console.log(`Message sent to channel ${message.channel}`))
+          .catch(console.error);
+      } else {
+        rtm.sendMessage(`Idk what you meant.`, message.channel)
+          .then(() => console.log(`Message sent to channel ${message.channel}`))
+          .catch(console.error);
+      }
     });
   }
 

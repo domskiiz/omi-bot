@@ -18,6 +18,7 @@
   "homepage": "https://github.com/domskiiz/omi-bot#readme",
   "dependencies": {
     "@slack/client": "^3.16.0",
+    "axios": "^0.18.0",
     "express": "^4.16.2",
     "mongoose": "^5.0.7"
   }
