@@ -40,16 +40,16 @@ rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
 
 // Client emits RTM.RTM_CONNECTION_OPENED when the connection is made
 rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, function() {
-  channelListPromise.then((response) => {
-    response.channels.forEach((channel) => {
-      if (channel.is_member) {
-        channelList.push(channel.id);
-        rtm.sendMessage(process.env.GREETING_MESSAGE, channel.id)
-          .then(() => console.log(`Message sent to channel ${channel.name}`))
-          .catch(console.error);
-      }
-    });
-  });
+  // channelListPromise.then((response) => {
+  //   response.channels.forEach((channel) => {
+  //     if (channel.is_member) {
+  //       channelList.push(channel.id);
+  //       rtm.sendMessage(process.env.GREETING_MESSAGE, channel.id)
+  //         .then(() => console.log(`Message sent to channel ${channel.name}`))
+  //         .catch(console.error);
+  //     }
+  //   });
+  // });
   console.log('Cockbot is authenticated.');
 });
 
